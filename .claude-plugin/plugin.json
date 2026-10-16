@@ -1,0 +1,6 @@
+{
+  "name": "figcraft-skills",
+  "version": "0.1.0-dev.1",
+  "description": "FigCraft 界面设计场景技能，本地未发布候选",
+  "skills": "./skills/"
+}
