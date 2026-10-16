@@ -1,0 +1,50 @@
+{
+  "schema": "craft-scenario-playbooks/v1",
+  "application": "figcraft",
+  "id": "wireframe",
+  "execution": "COMMAND_MAPPED_NOT_SCENE_ACCEPTED",
+  "steps": [
+    {
+      "purpose": "按真实页面尺寸创建容器",
+      "command": "node.create",
+      "params": {
+        "type": "frame",
+        "name": "Desktop",
+        "width": 1280,
+        "height": 1024
+      },
+      "capture": "frame"
+    },
+    {
+      "purpose": "建立导航区域占位",
+      "command": "node.create",
+      "params": {
+        "type": "rectangle",
+        "name": "Navigation",
+        "x": 0,
+        "y": 0,
+        "width": 240,
+        "height": 1024,
+        "parent": "$frame.id"
+      },
+      "bind": "parent = 第1步实际返回 frame.id；必须替换为真实ID后执行"
+    },
+    {
+      "purpose": "建立内容标题",
+      "command": "node.create",
+      "params": {
+        "type": "text",
+        "name": "PageTitle",
+        "text": "页面目标",
+        "x": 280,
+        "y": 40,
+        "parent": "$frame.id"
+      },
+      "bind": "parent = 第1步实际返回 frame.id；必须替换为真实ID后执行"
+    }
+  ],
+  "check": "页面任务、信息层级和主要操作清楚，按容器结构而非一张平面图交付。",
+  "boundary": "子节点parent应替换为第一步返回frame ID；没有parent时它们会落在页面根级。",
+  "templateOnly": true,
+  "argumentPolicy": "示例参数必须按当前输入、选择和实际返回ID替换；$变量先解析，数组变量整字段替换，不能将本文件直接当原生CLI脚本执行。"
+}

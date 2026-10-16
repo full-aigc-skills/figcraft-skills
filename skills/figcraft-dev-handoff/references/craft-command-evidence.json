@@ -1,0 +1,36 @@
+{
+  "runtime": {
+    "version": "v0.6.0",
+    "url": "https://github.com/storytold/figcraft/releases/download/v0.6.0/figcraft-0.6.0-windows-x64-portable.zip",
+    "sha256": "87cc2191f2b00c7701fed7db88222d227488e6f50963b24f61e46fed42a565ce",
+    "executable": "figcraft-cli.exe"
+  },
+  "ciRun": "https://github.com/partme-ai/full-aigc-plugins/actions/runs/38921194883",
+  "observedCommands": {
+    "component.list": {
+      "id": "component.list",
+      "label": "List components",
+      "menu": null,
+      "params": "{} → [{id, name, type, page, instances, folder (the Assets panel's folders: page, frames, slash names), label, library?}]",
+      "shortcut": null,
+      "undoable": false
+    },
+    "component.properties": {
+      "id": "component.properties",
+      "label": "Component properties",
+      "menu": null,
+      "params": "{id? (component, set or instance)}",
+      "shortcut": null,
+      "undoable": false
+    },
+    "file.exportLayers": {
+      "id": "file.exportLayers",
+      "label": "Export layers",
+      "menu": null,
+      "params": "{ids? (default the selection, else every layer on the page with export settings), assets? (true: the Inspect tab's assets in and under them instead: layers with export settings, icons as SVG, images as PNG), dir? (folder to write into; else each file comes back as base64 `data`), bleed? (PDF: points, or with a unit: \"3mm\", \"0.125in\", \"9pt\"), cropMarks?, bleedMarks?, cmyk? (PDF print options): for every PDF instead of each setting's own}  every layer once per export setting, named `<layer><suffix>.<format>` (\"@2x\" when a scaled export has no suffix; repeats get \" 2\"; slashes in a layer name make folders). Returns {files: [{name, id, bytes, path | data}], skipped (layers without settings)}",
+      "shortcut": null,
+      "undoable": false
+    }
+  },
+  "sceneAcceptance": "NOT_RUN"
+}

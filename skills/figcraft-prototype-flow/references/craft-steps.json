@@ -1,0 +1,81 @@
+{
+  "schema": "craft-scenario-playbooks/v1",
+  "application": "figcraft",
+  "id": "prototype-flow",
+  "execution": "COMMAND_MAPPED_NOT_SCENE_ACCEPTED",
+  "steps": [
+    {
+      "purpose": "创建流程起点画框",
+      "command": "node.create",
+      "params": {
+        "type": "frame",
+        "name": "Start",
+        "width": 390,
+        "height": 884
+      },
+      "capture": "start"
+    },
+    {
+      "purpose": "创建目标画框",
+      "command": "node.create",
+      "params": {
+        "type": "frame",
+        "name": "Result",
+        "x": 450,
+        "width": 390,
+        "height": 884
+      },
+      "capture": "result"
+    },
+    {
+      "purpose": "在起点框内建立真实按钮热点",
+      "command": "node.create",
+      "params": {
+        "type": "rectangle",
+        "name": "Continue",
+        "parent": "$start.id",
+        "x": 24,
+        "y": 720,
+        "width": 342,
+        "height": 48
+      },
+      "capture": "button",
+      "bind": "parent = 第1步返回的起点frame ID"
+    },
+    {
+      "purpose": "把按钮点击连接到实际目标画框",
+      "command": "proto.interaction.add",
+      "params": {
+        "id": "$button.id",
+        "dest": "$result.id"
+      },
+      "bind": "id = 第3步按钮ID；dest = 第2步目标frame ID"
+    },
+    {
+      "purpose": "登记明确的原型流程起点",
+      "command": "proto.flow.add",
+      "params": {
+        "start": "$start.id",
+        "name": "Main flow"
+      },
+      "bind": "start = 第1步起点frame ID"
+    },
+    {
+      "purpose": "打开原型设置面板核对流程起点",
+      "command": "view.prototype",
+      "params": {}
+    },
+    {
+      "purpose": "启动实际演示，再通过当前宿主可用浏览器控制点击按钮验证跳转",
+      "command": "proto.present",
+      "params": {
+        "start": "$start.id"
+      },
+      "bind": "start换成真实起点frame ID；只有实际点击后到达目标frame才完成此场景"
+    }
+  ],
+  "check": "从入口实际点击走到目标，核对返回路径、错误态和触发区域。",
+  "boundary": "创建后绑定真实节点ID，通过proto.interaction.add建立跳转、proto.flow.add指定起点、proto.present启动演示。启动成功仍需实际点击验证；宿主无法操作演示时保留该项未验收，不以属性面板打开代替。",
+  "templateOnly": true,
+  "argumentPolicy": "示例参数必须按当前输入、选择和实际返回ID替换；$变量先解析，数组变量整字段替换，不能将本文件直接当原生CLI脚本执行。"
+}
