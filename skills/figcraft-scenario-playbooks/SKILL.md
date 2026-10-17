@@ -18,7 +18,7 @@ license: Apache-2.0
 
 先检查`figcraft-cli --version`及`commands --json`；技能不附带二进制，缺失时按[官方发行说明](https://github.com/storytold/figcraft/releases)选择当前系统版本并遵守安装授权。原生CLI用`run steps.json --in input.figcraft --out new.figcraft`，JSON数组每项为command/params，原生不会展开$ref。
 
-需要执行本手册的新建示例时，可运行本技能的[scripts/run_recipe.py](scripts/run_recipe.py)：`python run_recipe.py --recipes recipes.json --scene mobile-login-wireframe --output new.figcraft`，将两个路径换成本技能内实际路径。`--cli`可指定已核实的CLI。该脚本分批执行原生命令，读取创建返回ID后绑定后续参数，利用临时检查点保存重开；不实现编辑器业务、不依赖SDK。拒绝覆盖已有输出。已有文件可传`--input`，但先调整根frame位置和示例文案；当前示例坐标默认从原点开始。
+需要执行本手册的新建示例时，可运行本技能的[scripts/run_recipe.py](scripts/run_recipe.py)：`python run_recipe.py --recipes recipes.json --scene mobile-login-wireframe --output new.figcraft`，将两个路径换成本技能内实际路径。`--cli`可指定已核实的CLI。该可选脚本需要Python 3（Windows CI使用3.13），分批执行原生命令，读取创建返回ID后绑定后续参数，利用临时检查点保存重开；不实现编辑器业务、不依赖SDK。拒绝覆盖已有输出。已有文件可传`--input`，但先调整根frame位置和示例文案；当前示例坐标默认从原点开始。
 
 CLI检查点不会保留临时选择，所以步骤使用明确parent/id/ids，不能把选择状态当跨进程契约。附带脚本用于独立文件操作，不能用于宣称宿主画面同步；可见编辑器仍须用同一MCP会话逐步操作。
 
