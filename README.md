@@ -27,4 +27,4 @@
 
 ## 主题、图标插槽与数据柱图开发候选
 
-新增三个独立技能：`figcraft-light-dark-token-card`（明暗模式、语义别名及CSS/JSON交付）、`figcraft-swappable-icon-button`（实例交换、布尔可见性与独立文字）、`figcraft-signed-bar-chart`（正负零值的可编辑柱图）。固定Figma官方GitHub示例/参考，中文步骤与参数原创。当前为开发候选，尚未发布新市场版本；官方0.6.0 macOS完整18记录287次CLI执行通过，三个新场景设置/几何/PNG/SVG、新建及已有文件、输入保护和修改后重开通过；既有原型仅连线持久化，点击仍未验收。Windows与实际宿主同步待验收。
+新增三个独立技能：`figcraft-light-dark-token-card`（明暗模式、语义别名及CSS/JSON交付）、`figcraft-swappable-icon-button`（实例交换、布尔可见性与独立文字）、`figcraft-signed-bar-chart`（正负零值的可编辑柱图）。固定Figma官方GitHub示例/参考，中文步骤与参数原创。当前为开发候选，尚未发布新市场版本；官方0.6.0 macOS完整18记录287次CLI执行通过，三个新场景设置/几何/PNG/SVG、新建及已有文件、输入保护和修改后重开通过；既有原型仅连线持久化，点击仍未验收。Windows完整18记录292次已记录直接CLI调用、128输出摘要通过；真实Codex MCP/IAB执行60个配方步骤并观察主题/按钮/柱图同步，七个实际保存文件独立CLI回读通过。独立Python入口的ASCII输出/中文路径问题已修正，新增原生Windows入口回归待完成；真实业务设计与其他宿主仍未验收。

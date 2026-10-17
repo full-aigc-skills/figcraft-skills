@@ -60,6 +60,6 @@ def main():
         r=subprocess.run([a.cli,*args],capture_output=True,text=True,encoding='utf-8',timeout=120)
         if r.returncode:raise RuntimeError(r.stderr or r.stdout)
         return r.stdout
-    print(json.dumps(execute_recipe(recipe,run,Path.cwd(),a.output,a.input),ensure_ascii=False))
+    print(json.dumps(execute_recipe(recipe,run,Path.cwd(),a.output,a.input),ensure_ascii=True))
 
 if __name__=='__main__':main()

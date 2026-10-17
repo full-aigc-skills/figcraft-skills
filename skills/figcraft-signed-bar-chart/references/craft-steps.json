@@ -3,7 +3,7 @@
   "application": "figcraft",
   "id": "signed-bar-chart",
   "templateOnly": true,
-  "execution": "LIMITED_NATIVE_SYNTHETIC_PASS_HOST_PENDING",
+  "execution": "LIMITED_NATIVE_AND_CODEX_SYNTHETIC_PASS",
   "steps": [
     {
       "command": "file.new",

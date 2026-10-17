@@ -66,6 +66,17 @@
     "sceneResult": "PASS",
     "fullApplicationRecords": 18,
     "fullApplicationCliProcesses": 287,
-    "existingPrototypeBoundary": "links only; actual browser click not tested"
+    "existingPrototypeBoundary": "links only; actual browser click not tested",
+    "windows": {
+      "run": 39060824250,
+      "records": 18,
+      "trackedCliProcesses": 292,
+      "outputHashesVerified": 128,
+      "scope": "before standalone ASCII-output fix; same native command steps"
+    },
+    "codex": {
+      "canonicalMcpSteps": 19,
+      "scope": "actual isolated native Codex MCP + IAB; synthetic examples; not SDK"
+    }
   }
 }
