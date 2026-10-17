@@ -1,39 +1,35 @@
 # 本场景的 Craft 方法与参数
 
-先读取输入与当前选择。数值、路径、名称和对象编号仅为格式示例；用当前输入、实际返回ID和目标尺寸替换后执行。
+数值是原创示例，按真实输入、节点和目标替换；capture/$变量只是手册绑定标记，原生CLI不会自动替换。默认创建会改变选择，后续操作必须传真实id/ids。新建步骤仅用于新任务；已有工程另存并保护已有节点。原型的present请求仅启动界面，不等于用户已点击。
 
-| 顺序与目的 | 实际方法 | 参数例子与返回值绑定 |
+| 顺序与目的 | 实际方法 | 参数模板 |
 | --- | --- | --- |
-| 1. 创建流程起点画框 | `node.create` | `{"type":"frame","name":"Start","width":390,"height":884}` |
-| 2. 创建目标画框 | `node.create` | `{"type":"frame","name":"Result","x":450,"width":390,"height":884}` |
-| 3. 在起点框内建立真实按钮热点 | `node.create` | `{"type":"rectangle","name":"Continue","parent":"$start.id","x":24,"y":720,"width":342,"height":48}；绑定：parent = 第1步返回的起点frame ID` |
-| 4. 把按钮点击连接到实际目标画框 | `proto.interaction.add` | `{"id":"$button.id","dest":"$result.id"}；绑定：id = 第3步按钮ID；dest = 第2步目标frame ID` |
-| 5. 登记明确的原型流程起点 | `proto.flow.add` | `{"start":"$start.id","name":"Main flow"}；绑定：start = 第1步起点frame ID` |
-| 6. 打开原型设置面板核对流程起点 | `view.prototype` | `{}` |
-| 7. 启动实际演示，再通过当前宿主可用浏览器控制点击按钮验证跳转 | `proto.present` | `{"start":"$start.id"}；绑定：start换成真实起点frame ID；只有实际点击后到达目标frame才完成此场景` |
+| 1. 仅新建任务初始化，已有工程不能清空 | `file.new` | `{"name":"Clickable prototype"}` |
+| 2. 创建Start，绑定实际返回ID | `node.create` | `{"type":"frame","name":"Start","x":0,"y":0,"width":390,"height":884,"props":{"fill":"#ffffff"}}` |
+| 3. 创建Result，绑定实际返回ID | `node.create` | `{"type":"frame","name":"Result","x":450,"y":0,"width":390,"height":884,"props":{"fill":"#f1f5f9"}}` |
+| 4. 创建StartTitle，绑定实际返回ID | `node.create` | `{"type":"text","name":"StartTitle","x":24,"y":60,"width":342,"height":40,"parent":"$start.id","text":"开始流程","props":{"fontFamily":"Inter","fontSize":18,"fill":"#172033","textAutoResize":"height"}}` |
+| 5. 创建ResultTitle，绑定实际返回ID | `node.create` | `{"type":"text","name":"ResultTitle","x":24,"y":60,"width":342,"height":40,"parent":"$result.id","text":"已到达结果","props":{"fontFamily":"Inter","fontSize":18,"fill":"#172033","textAutoResize":"height"}}` |
+| 6. 创建Continue，绑定实际返回ID | `node.create` | `{"type":"rectangle","name":"Continue","x":24,"y":720,"width":342,"height":48,"parent":"$start.id","props":{"fill":"#2563eb","cornerRadius":8}}` |
+| 7. 创建ContinueLabel，绑定实际返回ID | `node.create` | `{"type":"text","name":"ContinueLabel","x":40,"y":732,"width":310,"height":24,"parent":"$start.id","text":"继续","props":{"fontFamily":"Inter","fontSize":18,"fill":"#ffffff","textAutoResize":"height","textAlign":"center"}}` |
+| 8. 创建Back，绑定实际返回ID | `node.create` | `{"type":"rectangle","name":"Back","x":24,"y":720,"width":342,"height":48,"parent":"$result.id","props":{"fill":"#2563eb","cornerRadius":8}}` |
+| 9. 创建BackLabel，绑定实际返回ID | `node.create` | `{"type":"text","name":"BackLabel","x":40,"y":732,"width":310,"height":24,"parent":"$result.id","text":"返回","props":{"fontFamily":"Inter","fontSize":18,"fill":"#ffffff","textAutoResize":"height","textAlign":"center"}}` |
+| 10. 连接明确的正向目标 | `proto.interaction.add` | `{"id":"$button.id","dest":"$result.id"}` |
+| 11. 连接明确的返回目标 | `proto.interaction.add` | `{"id":"$back.id","dest":"$start.id"}` |
+| 12. 登记顶层画框流程起点 | `proto.flow.add` | `{"start":"$start.id","name":"Main flow"}` |
+| 13. 启动演示；随后必须实际点击正向和返回热点 | `proto.present` | `{"start":"$start.id"}` |
 
-## 如何调用
+## 执行方式
 
-宿主内已打开编辑器时使用该同会话MCP；先等待editor_status就绪，读取实际工具schema和当前命令参数。独立CLI可用于文件任务，但新进程与已打开Web编辑器不是同一状态。
+先读[实际观察参数](craft-command-evidence.json)并向当前后端查询。每个capture绑定该步真实result；例如node.create返回id后，将$frame.id替换成真实ID。不要猜编号或将$字符串直接传给原生CLI。
 
-本插件MCP包装：`run_command`，参数 `{"command": "node.create", "params": {"type": "frame", "name": "Start", "width": 390, "height": 884}}`。后续行保持同一会话和对象选择，逐条检查实际结果。
+宿主内同步编辑使用同一编辑器会话的`run_command`，例如`{"command":"node.get","params":{"id":实际节点ID}}`；编辑器就绪后才能操作。独立CLI每批写JSON数组，如`[{"command":"node.get","params":{"id":2}}]`，以argv运行`figcraft-cli run steps.json --in input.figcraft --out output.figcraft`；用真实输入及返回ID替换示例2。读返回JSONL，核对每行ok及result。分批操作从上一批工程继续，不能启动一个空会话后猜原对象ID。新CLI进程不自动改变已打开编辑器。
 
-CLI 语法（下面是展示用写法，实际跨平台执行用argv避免shell引号差异）：
+[craft-steps.json](craft-steps.json)是参数模板。导出路径须在目标工作区，先检查冲突，保留输入；另存工程后用新进程读取结构和导出图片。
 
-figcraft-cli run steps.json --in input.figcraft --out output.figcraft；steps.json 是 [{"command":"node.create","params":{"type":"frame","name":"Screen","width":390,"height":884}}]。返回ID用于parent等关联，不能猜测。
+## 检查与边界
 
-## 参数核对与完成标准
+保存重开保留正向和返回交互及流程起点；必须在实际浏览器演示中点击到结果，再返回起点，才完成交互验收。
 
-先查 [当前版本观察目录](craft-command-evidence.json) 中对应方法的完整参数，再按实际运行时查询更新。结构化步骤见 [craft-steps.json](craft-steps.json)。
+PNG/SVG导出、布局数字或连线存在不能替代真实设计审阅、原型点击、导入保真及宿主同步验收。
 
-从入口实际点击走到目标，核对返回路径、错误态和触发区域。
-
-边界：创建画框不自动建立连线；交互通过node.set interactions当前schema配置，先查返回ID与格式。
-
-保存可编辑工程后由新进程或重新打开的同一宿主会话核对；导出格式单独解码/查看。方法存在和零退出不代表本场景已经完成。
-
-工作流来源与许可见 [workflow-sources.json](workflow-sources.json)。仅借鉴事实与方法，本文与参数例子原创编写。
-
-返回值绑定说明：表中的 `$...` 是待解析参数，不是发送给引擎的字符串。逐步取得真实返回ID后替换，再调用下一步。若实际返回结构不同，先检查结果，不猜ID。
-
-返回值绑定说明：表中的 `$...` 是待解析参数，不是发送给引擎的字符串。逐步取得真实返回ID后替换，再调用下一步。若实际返回结构不同，先检查结果，不猜ID。
+[工作流来源与许可](workflow-sources.json)：只借鉴Figma工作流事实，步骤及参数原创适配。

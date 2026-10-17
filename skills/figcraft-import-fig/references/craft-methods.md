@@ -1,31 +1,25 @@
 # 本场景的 Craft 方法与参数
 
-先读取输入与当前选择。数值、路径、名称和对象编号仅为格式示例；用当前输入、实际返回ID和目标尺寸替换后执行。
+数值是原创示例，按真实输入、节点和目标替换；capture/$变量只是手册绑定标记，原生CLI不会自动替换。默认创建会改变选择，后续操作必须传真实id/ids。新建步骤仅用于新任务；已有工程另存并保护已有节点。导入是best effort；变量sidecar按实际schema传入；保真或warnings异常需明确报告。
 
-| 顺序与目的 | 实际方法 | 参数例子 |
+| 顺序与目的 | 实际方法 | 参数模板 |
 | --- | --- | --- |
-| 1. 导入实际Figma文件 | `file.open` | `{"path":"input/design.fig"}` |
-| 2. 查看导入后的组件结构 | `component.list` | `{}` |
-| 3. 导出可核对的SVG | `file.exportSvg` | `{"path":"output/import-proof.svg"}` |
+| 1. 在独立文档中导入实际Figma文件，保留warnings | `file.open` | `{"path":"input/design.fig"}` |
+| 2. 检查导入后真实组件清单 | `component.list` | `{}` |
+| 3. 另存SVG用于检查，不覆盖输入 | `file.exportSvg` | `{"path":"import-proof.svg"}` |
 
-## 如何调用
+## 执行方式
 
-宿主内已打开编辑器时使用该同会话MCP；先等待editor_status就绪，读取实际工具schema和当前命令参数。独立CLI可用于文件任务，但新进程与已打开Web编辑器不是同一状态。
+先读[实际观察参数](craft-command-evidence.json)并向当前后端查询。每个capture绑定该步真实result；例如node.create返回id后，将$frame.id替换成真实ID。不要猜编号或将$字符串直接传给原生CLI。
 
-本插件MCP包装：`run_command`，参数 `{"command": "file.open", "params": {"path": "input/design.fig"}}`。后续行保持同一会话和对象选择，逐条检查实际结果。
+宿主内同步编辑使用同一编辑器会话的`run_command`，例如`{"command":"node.get","params":{"id":实际节点ID}}`；编辑器就绪后才能操作。独立CLI每批写JSON数组，如`[{"command":"node.get","params":{"id":2}}]`，以argv运行`figcraft-cli run steps.json --in input.figcraft --out output.figcraft`；用真实输入及返回ID替换示例2。读返回JSONL，核对每行ok及result。分批操作从上一批工程继续，不能启动一个空会话后猜原对象ID。新CLI进程不自动改变已打开编辑器。
 
-CLI 语法（下面是展示用写法，实际跨平台执行用argv避免shell引号差异）：
+[craft-steps.json](craft-steps.json)是参数模板。导出路径须在目标工作区，先检查冲突，保留输入；另存工程后用新进程读取结构和导出图片。
 
-figcraft-cli run steps.json --in input.figcraft --out output.figcraft；steps.json 是 [{"command":"node.create","params":{"type":"frame","name":"Screen","width":390,"height":884}}]。返回ID用于parent等关联，不能猜测。
+## 检查与边界
 
-## 参数核对与完成标准
+用实际二进制.fig导入，记录warnings，保留输入，检查节点类型、名称、圆角及导出；单一样本通过不代表完整Figma保真。
 
-先查 [当前版本观察目录](craft-command-evidence.json) 中对应方法的完整参数，再按实际运行时查询更新。结构化步骤见 [craft-steps.json](craft-steps.json)。
+PNG/SVG导出、布局数字或连线存在不能替代真实设计审阅、原型点击、导入保真及宿主同步验收。
 
-逐画框检查文字、组件、蒙版、颜色和导入warnings。
-
-边界：fig是best effort，不把可打开当完整保真；变量文件需按当前file.open说明另传。
-
-保存可编辑工程后由新进程或重新打开的同一宿主会话核对；导出格式单独解码/查看。方法存在和零退出不代表本场景已经完成。
-
-工作流来源与许可见 [workflow-sources.json](workflow-sources.json)。仅借鉴事实与方法，本文与参数例子原创编写。
+[工作流来源与许可](workflow-sources.json)：只借鉴Figma工作流事实，步骤及参数原创适配。

@@ -1,33 +1,30 @@
 # 本场景的 Craft 方法与参数
 
-先读取输入与当前选择。数值、路径、名称和对象编号仅为格式示例；用当前输入、实际返回ID和目标尺寸替换后执行。
+数值是原创示例，按真实输入、节点和目标替换；capture/$变量只是手册绑定标记，原生CLI不会自动替换。默认创建会改变选择，后续操作必须传真实id/ids。新建步骤仅用于新任务；已有工程另存并保护已有节点。
 
-| 顺序与目的 | 实际方法 | 参数例子与返回值绑定 |
+| 顺序与目的 | 实际方法 | 参数模板 |
 | --- | --- | --- |
-| 1. 按真实页面尺寸创建容器 | `node.create` | `{"type":"frame","name":"Desktop","width":1280,"height":1024}` |
-| 2. 建立导航区域占位 | `node.create` | `{"type":"rectangle","name":"Navigation","x":0,"y":0,"width":240,"height":1024,"parent":"$frame.id"}；绑定：parent = 第1步实际返回 frame.id；必须替换为真实ID后执行` |
-| 3. 建立内容标题 | `node.create` | `{"type":"text","name":"PageTitle","text":"页面目标","x":280,"y":40,"parent":"$frame.id"}；绑定：parent = 第1步实际返回 frame.id；必须替换为真实ID后执行` |
+| 1. 仅新建任务初始化，已有工程不能清空 | `file.new` | `{"name":"Desktop wireframe"}` |
+| 2. 创建Desktop，绑定实际返回ID | `node.create` | `{"type":"frame","name":"Desktop","x":0,"y":0,"width":1280,"height":1024,"props":{"fill":"#ffffff","clip":true}}` |
+| 3. 创建Navigation，绑定实际返回ID | `node.create` | `{"type":"rectangle","name":"Navigation","x":0,"y":0,"width":240,"height":1024,"parent":"$frame.id","props":{"fill":"#e2e8f0"}}` |
+| 4. 创建PageTitle，绑定实际返回ID | `node.create` | `{"type":"text","name":"PageTitle","x":280,"y":40,"width":900,"height":48,"parent":"$frame.id","text":"页面目标","props":{"fontFamily":"Inter","fontSize":30,"fill":"#172033","textAutoResize":"height"}}` |
+| 5. 创建ContentCard，绑定实际返回ID | `node.create` | `{"type":"frame","name":"ContentCard","x":280,"y":120,"width":952,"height":300,"parent":"$frame.id","props":{"fill":"#f1f5f9","cornerRadius":12}}` |
+| 6. 创建ContentSummary，绑定实际返回ID | `node.create` | `{"type":"text","name":"ContentSummary","x":24,"y":24,"width":904,"height":60,"parent":"$card.id","text":"先展示用户任务、信息层级和主要操作；内容待替换。","props":{"fontFamily":"Inter","fontSize":18,"fill":"#172033","textAutoResize":"height"}}` |
+| 7. 创建PrimaryAction，绑定实际返回ID | `node.create` | `{"type":"frame","name":"PrimaryAction","x":280,"y":460,"width":240,"height":48,"parent":"$frame.id","props":{"fill":"#2563eb","cornerRadius":8}}` |
+| 8. 创建PrimaryActionLabel，绑定实际返回ID | `node.create` | `{"type":"text","name":"PrimaryActionLabel","x":16,"y":12,"width":208,"height":24,"parent":"$action.id","text":"继续","props":{"fontFamily":"Inter","fontSize":18,"fill":"#ffffff","textAutoResize":"height","textAlign":"center"}}` |
 
-## 如何调用
+## 执行方式
 
-宿主内已打开编辑器时使用该同会话MCP；先等待editor_status就绪，读取实际工具schema和当前命令参数。独立CLI可用于文件任务，但新进程与已打开Web编辑器不是同一状态。
+先读[实际观察参数](craft-command-evidence.json)并向当前后端查询。每个capture绑定该步真实result；例如node.create返回id后，将$frame.id替换成真实ID。不要猜编号或将$字符串直接传给原生CLI。
 
-本插件MCP包装：`run_command`，参数 `{"command": "node.create", "params": {"type": "frame", "name": "Desktop", "width": 1280, "height": 1024}}`。后续行保持同一会话和对象选择，逐条检查实际结果。
+宿主内同步编辑使用同一编辑器会话的`run_command`，例如`{"command":"node.get","params":{"id":实际节点ID}}`；编辑器就绪后才能操作。独立CLI每批写JSON数组，如`[{"command":"node.get","params":{"id":2}}]`，以argv运行`figcraft-cli run steps.json --in input.figcraft --out output.figcraft`；用真实输入及返回ID替换示例2。读返回JSONL，核对每行ok及result。分批操作从上一批工程继续，不能启动一个空会话后猜原对象ID。新CLI进程不自动改变已打开编辑器。
 
-CLI 语法（下面是展示用写法，实际跨平台执行用argv避免shell引号差异）：
+[craft-steps.json](craft-steps.json)是参数模板。导出路径须在目标工作区，先检查冲突，保留输入；另存工程后用新进程读取结构和导出图片。
 
-figcraft-cli run steps.json --in input.figcraft --out output.figcraft；steps.json 是 [{"command":"node.create","params":{"type":"frame","name":"Screen","width":390,"height":884}}]。返回ID用于parent等关联，不能猜测。
+## 检查与边界
 
-## 参数核对与完成标准
+1280×1024画板有导航、标题、内容卡和主操作，所有子节点归属正确，文字可编辑。
 
-先查 [当前版本观察目录](craft-command-evidence.json) 中对应方法的完整参数，再按实际运行时查询更新。结构化步骤见 [craft-steps.json](craft-steps.json)。
+PNG/SVG导出、布局数字或连线存在不能替代真实设计审阅、原型点击、导入保真及宿主同步验收。
 
-页面任务、信息层级和主要操作清楚，按容器结构而非一张平面图交付。
-
-边界：子节点parent应替换为第一步返回frame ID；没有parent时它们会落在页面根级。
-
-保存可编辑工程后由新进程或重新打开的同一宿主会话核对；导出格式单独解码/查看。方法存在和零退出不代表本场景已经完成。
-
-工作流来源与许可见 [workflow-sources.json](workflow-sources.json)。仅借鉴事实与方法，本文与参数例子原创编写。
-
-返回值绑定说明：表中的 `$...` 是待解析参数，不是发送给引擎的字符串。逐步取得真实返回ID后替换，再调用下一步。若实际返回结构不同，先检查结果，不猜ID。
+[工作流来源与许可](workflow-sources.json)：只借鉴Figma工作流事实，步骤及参数原创适配。

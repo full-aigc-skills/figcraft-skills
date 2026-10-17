@@ -7,6 +7,14 @@
   },
   "ciRun": "https://github.com/partme-ai/full-aigc-plugins/actions/runs/38921194883",
   "observedCommands": {
+    "file.new": {
+      "id": "file.new",
+      "label": "New design file",
+      "menu": "File",
+      "params": "{name?}",
+      "shortcut": "Cmd+N",
+      "undoable": false
+    },
     "node.create": {
       "id": "node.create",
       "label": "Create layer",
@@ -21,6 +29,30 @@
       "menu": "Object",
       "params": "{ids?}  (one frame/group becomes a component; several layers are wrapped in one)",
       "shortcut": "Alt+Cmd+K",
+      "undoable": true
+    },
+    "component.addProperty": {
+      "id": "component.addProperty",
+      "label": "Add component property",
+      "menu": null,
+      "params": "{id? (component, set, or a layer inside a component: it gets bound), name, type: boolean|text|instanceSwap|variant|slot, default?, layer? (node bound to it; a frame for slots), preferred? (instance swap and slot properties: component or set ids offered first)}",
+      "shortcut": null,
+      "undoable": true
+    },
+    "instance.create": {
+      "id": "instance.create",
+      "label": "Create instance",
+      "menu": null,
+      "params": "{component (component or set: its default variant), x?, y?, parent?}",
+      "shortcut": null,
+      "undoable": true
+    },
+    "instance.setProperties": {
+      "id": "instance.setProperties",
+      "label": "Set instance properties",
+      "menu": null,
+      "params": "{ids?, properties {name: value}} (variant properties switch variants)",
+      "shortcut": null,
       "undoable": true
     },
     "component.list": {

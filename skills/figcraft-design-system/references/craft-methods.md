@@ -1,32 +1,31 @@
 # 本场景的 Craft 方法与参数
 
-先读取输入与当前选择。数值、路径、名称和对象编号仅为格式示例；用当前输入、实际返回ID和目标尺寸替换后执行。
+数值是原创示例，按真实输入、节点和目标替换；capture/$变量只是手册绑定标记，原生CLI不会自动替换。默认创建会改变选择，后续操作必须传真实id/ids。新建步骤仅用于新任务；已有工程另存并保护已有节点。
 
-| 顺序与目的 | 实际方法 | 参数例子 |
+| 顺序与目的 | 实际方法 | 参数模板 |
 | --- | --- | --- |
-| 1. 建立按钮组件底稿 | `node.create` | `{"type":"frame","name":"Button/Primary","width":160,"height":48}` |
-| 2. 选中底稿后转为组件 | `component.create` | `{}` |
-| 3. 列出真实组件供实例化 | `component.list` | `{}` |
-| 4. 检查组件属性 | `component.properties` | `{}` |
+| 1. 仅新建任务初始化，已有工程不能清空 | `file.new` | `{"name":"Component library"}` |
+| 2. 创建Button/Primary，绑定实际返回ID | `node.create` | `{"type":"frame","name":"Button/Primary","x":0,"y":0,"width":240,"height":48,"props":{"fill":"#2563eb","layout":"horizontal","padding":[12,16,12,16],"crossAlign":"center","gap":8,"cornerRadius":8}}` |
+| 3. 创建Label，绑定实际返回ID | `node.create` | `{"type":"text","name":"Label","x":0,"y":0,"width":208,"height":24,"parent":"$root.id","text":"Continue","props":{"fontFamily":"Inter","fontSize":18,"fill":"#ffffff","textAutoResize":"height","sizingH":"fill","textAlign":"center"}}` |
+| 4. 明确组件底稿ID，不依赖当前文字选择 | `component.create` | `{"ids":["$root.id"]}` |
+| 5. 给文字建立可覆盖属性 | `component.addProperty` | `{"id":"$root.id","name":"Label","type":"text","default":"Continue","layer":"$label.id"}` |
+| 6. 创建真实关联实例 | `instance.create` | `{"component":"$root.id","x":280,"y":0}` |
+| 7. 只覆盖实例文字 | `instance.setProperties` | `{"ids":["$instance.id"],"properties":{"Label":"Proceed"}}` |
+| 8. 检查主组件注册 | `component.list` | `{}` |
+| 9. 检查实例可暴露属性 | `component.properties` | `{"id":"$instance.id"}` |
 
-## 如何调用
+## 执行方式
 
-宿主内已打开编辑器时使用该同会话MCP；先等待editor_status就绪，读取实际工具schema和当前命令参数。独立CLI可用于文件任务，但新进程与已打开Web编辑器不是同一状态。
+先读[实际观察参数](craft-command-evidence.json)并向当前后端查询。每个capture绑定该步真实result；例如node.create返回id后，将$frame.id替换成真实ID。不要猜编号或将$字符串直接传给原生CLI。
 
-本插件MCP包装：`run_command`，参数 `{"command": "node.create", "params": {"type": "frame", "name": "Button/Primary", "width": 160, "height": 48}}`。后续行保持同一会话和对象选择，逐条检查实际结果。
+宿主内同步编辑使用同一编辑器会话的`run_command`，例如`{"command":"node.get","params":{"id":实际节点ID}}`；编辑器就绪后才能操作。独立CLI每批写JSON数组，如`[{"command":"node.get","params":{"id":2}}]`，以argv运行`figcraft-cli run steps.json --in input.figcraft --out output.figcraft`；用真实输入及返回ID替换示例2。读返回JSONL，核对每行ok及result。分批操作从上一批工程继续，不能启动一个空会话后猜原对象ID。新CLI进程不自动改变已打开编辑器。
 
-CLI 语法（下面是展示用写法，实际跨平台执行用argv避免shell引号差异）：
+[craft-steps.json](craft-steps.json)是参数模板。导出路径须在目标工作区，先检查冲突，保留输入；另存工程后用新进程读取结构和导出图片。
 
-figcraft-cli run steps.json --in input.figcraft --out output.figcraft；steps.json 是 [{"command":"node.create","params":{"type":"frame","name":"Screen","width":390,"height":884}}]。返回ID用于parent等关联，不能猜测。
+## 检查与边界
 
-## 参数核对与完成标准
+存在主组件和真实关联实例；实例Label为Proceed、主文字仍Continue；调整主宽度后实例尺寸跟随且文字覆盖保留。
 
-先查 [当前版本观察目录](craft-command-evidence.json) 中对应方法的完整参数，再按实际运行时查询更新。结构化步骤见 [craft-steps.json](craft-steps.json)。
+PNG/SVG导出、布局数字或连线存在不能替代真实设计审阅、原型点击、导入保真及宿主同步验收。
 
-组件可编辑、命名一致、实例复用，文本和状态变化不破坏布局。
-
-边界：创建和选择是不同动作；component.create前应使用实际选中或ids返回值。
-
-保存可编辑工程后由新进程或重新打开的同一宿主会话核对；导出格式单独解码/查看。方法存在和零退出不代表本场景已经完成。
-
-工作流来源与许可见 [workflow-sources.json](workflow-sources.json)。仅借鉴事实与方法，本文与参数例子原创编写。
+[工作流来源与许可](workflow-sources.json)：只借鉴Figma工作流事实，步骤及参数原创适配。
