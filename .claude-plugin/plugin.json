@@ -1,6 +1,6 @@
 {
   "name": "figcraft-skills",
-  "version": "0.1.0-dev.1",
-  "description": "FigCraft 界面设计场景技能，本地未发布候选",
+  "version": "0.1.0-dev.20261018.1",
+  "description": "FigCraft 场景技能与独立CLI执行器，配套FigCraft Use开发预发布。",
   "skills": "./skills/"
 }
