@@ -1,11 +1,11 @@
 {
   "runtime": {
-    "version": "v0.6.0",
-    "url": "https://github.com/storytold/figcraft/releases/download/v0.6.0/figcraft-0.6.0-windows-x64-portable.zip",
-    "sha256": "87cc2191f2b00c7701fed7db88222d227488e6f50963b24f61e46fed42a565ce",
-    "executable": "figcraft-cli.exe"
+    "repository": "storytold/figcraft",
+    "commit": "d1d8c3f652cea20bee02bdbc3ded9a2f5362ba08",
+    "exeSha256": "258ebcacd03404ab15e627b0a6c1a654b4f7f54336f4c6f4b48351abc0bb945e",
+    "artifactRun": 39007496391
   },
-  "ciRun": "https://github.com/partme-ai/full-aigc-plugins/actions/runs/38921194883",
+  "ciRun": "https://github.com/partme-ai/full-aigc-plugins/actions/runs/39017122218",
   "observedCommands": {
     "file.new": {
       "id": "file.new",
@@ -72,5 +72,11 @@
       "undoable": false
     }
   },
-  "sceneAcceptance": "NOT_RUN"
+  "sceneAcceptance": "LIMITED_TECHNICAL_PASS",
+  "baselineRuntime": {
+    "version": "v0.6.0",
+    "url": "https://github.com/storytold/figcraft/releases/download/v0.6.0/figcraft-0.6.0-windows-x64-portable.zip",
+    "sha256": "87cc2191f2b00c7701fed7db88222d227488e6f50963b24f61e46fed42a565ce",
+    "executable": "figcraft-cli.exe"
+  }
 }
